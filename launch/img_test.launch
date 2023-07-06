@@ -1,0 +1,8 @@
+<launch>
+	<arg name = "name" doc = "The robots name"/>
+    	<group ns = "$(arg name)">
+        	<node pkg = "ouster_ros" name = "img_node" type = "img_node" required="true">
+        	<remap to = "lidar_points" from = "img_node/points" />
+    	</node>
+    	</group> 
+</launch>
