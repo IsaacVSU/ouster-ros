@@ -1,0 +1,79 @@
+pixels_per_column: 64
+pixels_per_row: 512
+px_offset:
+- 9
+- 6
+- 3
+- 0
+- 9
+- 6
+- 3
+- 0
+- 9
+- 6
+- 3
+- 0
+- 9
+- 6
+- 3
+- 0
+- 9
+- 6
+- 3
+- 0
+- 9
+- 6
+- 3
+- 1
+- 9
+- 6
+- 3
+- 1
+- 9
+- 6
+- 4
+- 1
+- 9
+- 6
+- 3
+- 1
+- 9
+- 7
+- 4
+- 1
+- 10
+- 7
+- 4
+- 1
+- 10
+- 7
+- 4
+- 1
+- 10
+- 7
+- 4
+- 1
+- 10
+- 7
+- 4
+- 1
+- 10
+- 7
+- 4
+- 1
+- 10
+- 7
+- 4
+- 1
+rosdistro: 'noetic
+
+  '
+roslaunch:
+  uris:
+    host_iwat1874_precision_7770__37369: http://iwat1874-Precision-7770:37369/
+    host_iwat1874_precision_7770__39999: http://iwat1874-Precision-7770:39999/
+    host_iwat1874_precision_7770__44121: http://iwat1874-Precision-7770:44121/
+rosversion: '1.16.0
+
+  '
+run_id: 7fc2e12c-1cf8-11ee-bada-f92d5f34ca16

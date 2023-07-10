@@ -1,8 +1,10 @@
 <launch>
+	
 	<arg name = "name" doc = "The robots name"/>
     	<group ns = "$(arg name)">
         	<node pkg = "ouster_ros" name = "img_node" type = "img_node" required="true">
-        	<remap to = "lidar_points" from = "img_node/points" />
-    	</node>
+        		<remap to = "lidar_points" from = "img_node/points" />
+        		<rosparam file = "$(find ouster_ros)/launch/config/dump.yaml" />
+    		</node>
     	</group> 
 </launch>
