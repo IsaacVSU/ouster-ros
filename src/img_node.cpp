@@ -41,48 +41,79 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "img_node");
     ros::NodeHandle nh("~");
 
+    //Default values:
+        std::vector<int> offset_default = {9, 6, 3, 0, 9, 6,
+                                        3, 0, 9, 6, 3, 0,
+                                        9, 6, 3, 0, 9, 6,
+                                        3, 0, 9, 6, 3, 1,
+                                        9, 6, 3, 1, 9, 6,
+                                        4, 1, 9, 6, 3, 1,
+                                        9, 7, 4, 1, 10, 7,
+                                        4, 1, 10, 7, 4, 1, 
+                                        10, 7, 4, 1, 10, 7, 
+                                        4, 1, 10, 7, 4, 1,
+                                        10, 7, 4, 1
 
-//TODO: Make this part of the code work
-/*
+        };
+        size_t defaultW = 64; 
+        size_t defaultH = 512;
+
+    size_t FinalH = defaultH;
+    size_t FinalW = defaultW;
+    std::vector<int> Final_offset_default = offset_default;
+
     ouster_ros::OSConfigSrv cfg{};
     auto client = nh.serviceClient<ouster_ros::OSConfigSrv>("os_config");
-    client.waitForExistence();
-    if (!client.call(cfg)) {
-        ROS_ERROR("Calling os config service failed");
-        return EXIT_FAILURE;
+    bool LoadFromService = false; 
+    nh.getParam("LoadFromService", LoadFromService);
+    //UNCOMMENT IF RUNNING FROM A ROBOT, NOT A BAG
+    if(LoadFromService){
+        ROS_WARN("Getting Height, width, and pixel offset from os_config service");
+        client.waitForExistence();
+        if (!client.call(cfg)) {
+            ROS_ERROR("Calling os config service failed");
+
+            //Use rosParam intead if this happens
+
+            return EXIT_FAILURE;
+        }
+        else{
+            ROS_WARN("Getting info from a client");
+            auto info = sensor::parse_metadata(cfg.response.metadata);
+            FinalH = info.format.pixels_per_column;
+            FinalW = info.format.columns_per_frame;
+            Final_offset_default = info.format.pixel_shift_by_row;
+        }
+    }
+    else{
+        if(ros::param::has("~px_offset") && ros::param::has("~pixels_per_column") && ros::param::has("~pixels_per_row")){
+            //DEBUGGING ROS params
+            ROS_WARN("Getting Height, width, and pixel offset from rosparams");
+            int tempH, tempW;
+            std::vector<int> offset_temp;
+
+            // ROS_WARN("Can get ROS Param? /px_offset: %d", ros::param::has("~px_offset"));
+            // ROS_WARN("Can get ROS Param? /pixels_per_column: %d", ros::param::has("~pixels_per_column"));
+            // ROS_WARN("Can get ROS Param? /pixels_per_row: %d", ros::param::has("~pixels_per_row"));
+
+            nh.param<int>("pixels_per_column", tempH, 512);
+            nh.param<int>("pixels_per_row", tempW, 64);
+            //nh.param<std::vector<int>>("px_offset", offset_temp);
+            ros::param::get("~px_offset", offset_temp);
+            // ros::param::get("/pixels_per_column", tempH);
+            // ros::param::get("/pixels_per_row", tempW);
+
+            Final_offset_default = offset_temp;
+            FinalW = (size_t) tempW;
+            FinalH = (size_t) tempH;
+        }
     }
 
-    auto info = sensor::parse_metadata(cfg.response.metadata);
-    size_t H = info.format.pixels_per_column;
-    size_t W = info.format.columns_per_frame;
 
-    const auto& px_offset = info.format.pixel_shift_by_row;
-*/
-        //DEFAULT VALUES
-        std::vector<int> offset_temp;
-        int tempW; 
-        int tempH;
+        const std::vector<int> px_offset = Final_offset_default;
+        size_t W =  FinalW;
+        size_t H = FinalH;
 
-        //DEBUGGING ROS params
-        ROS_WARN("Can get ROS Param? /px_offset: %d", ros::param::has("~px_offset"));
-        ROS_WARN("Can get ROS Param? /pixels_per_column: %d", ros::param::has("~pixels_per_column"));
-        ROS_WARN("Can get ROS Param? /pixels_per_row: %d", ros::param::has("~pixels_per_row"));
-
-        nh.param<int>("pixels_per_column", tempH, 512);
-        nh.param<int>("pixels_per_row", tempW, 64);
-        //nh.param<std::vector<int>>("px_offset", offset_temp);
-        ros::param::get("~px_offset", offset_temp);
-        // ros::param::get("/pixels_per_column", tempH);
-        // ros::param::get("/pixels_per_row", tempW);
-
-        const std::vector<int> px_offset = offset_temp;
-        size_t W = (size_t) tempW;
-        size_t H = (size_t) tempH;
-        if( ros::param::has("~px_offset") &&
-            ros::param::has("~pixels_per_column") &&
-            ros::param::has("~configpixels_per_row")){
-            ROS_WARN("ROS got the params px_offset, Height, and width: %ld x %ld", H, W);
-        }
     ros::Publisher range_image_pub =
         nh.advertise<sensor_msgs::Image>("range_image", 100);
     ros::Publisher ambient_image_pub =

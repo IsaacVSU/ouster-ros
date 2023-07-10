@@ -1,10 +1,12 @@
 <launch>
-	
-	<arg name = "name" doc = "The robots name"/>
-    	<group ns = "$(arg name)">
-        	<node pkg = "ouster_ros" name = "img_node" type = "img_node" required="true">
-        		<remap to = "lidar_points" from = "img_node/points" />
-        		<rosparam file = "$(find ouster_ros)/launch/config/dump.yaml" />
-    		</node>
-    	</group> 
+
+        <arg name = "name" doc = "The robots name"/>
+        <arg name = "FromService" doc = "Boolean value (1 or 0) do you want to load from service (True), False otherwise" />
+        <group ns = "$(arg name)">
+                <node pkg = "ouster_ros" name = "img_node" type = "img_node" required="true">
+                        <remap to = "lidar_points" from = "img_node/points" />
+                                <param name = "LoadFromService" value="$(arg FromService)" />
+                        <rosparam file = "$(find ouster_ros)/launch/config/dump.yaml" />
+                </node>
+        </group>
 </launch>
