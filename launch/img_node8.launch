@@ -1,0 +1,19 @@
+<launch>
+	
+	<arg name = "name" doc = "The robots name"/>
+	<arg name = "FromService" doc = "Boolean value (1 or 0) do you want to load from service (True), False otherwise" />
+	<arg name = "range" doc = "The range of the environment we are in type(double)" />
+    	<group ns = "$(arg name)">
+        	<node pkg = "ouster_ros" name = "img_node8" type = "img_node8" required="true" output="screen">
+        		<remap to = "lidar_points" from = "img_node8/points" />
+				<param name = "LoadFromService" value="$(arg FromService)" />
+				<param name = "range" value="$(arg range)" />
+        		<rosparam file = "$(find ouster_ros)/launch/config/dump.yaml" />
+    		</node>
+    	</group> 
+		
+		<!-- <node pkg = "ouster_ros" name = "metadata_node" type = "metadata_node" required="true">
+			<param name = "LoadFromService" value="$(arg FromService)" />
+			<rosparam file = "$(find ouster_ros)/launch/config/dump.yaml" />
+		</node> -->
+</launch>
